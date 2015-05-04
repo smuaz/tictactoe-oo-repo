@@ -35,13 +35,6 @@ class Board
     data.select { |_, value| value == ' ' }.keys
   end
 
-  def no_empty_square?
-    if data.select { |_, value| value == ' ' }.keys.empty?
-      puts "It's a tie!"
-      exit
-    end
-  end
-
   def mark(player)
     begin
       puts "#{player.name}: Choose a position (from 1 to 9) to place a piece"
@@ -55,7 +48,7 @@ class Board
     puts "#{player.name} chooses a square..."
     sleep 0.5
 
-    calculate_moves_auto(player.marker, another_player.marker)
+    computer_moves(player.marker, another_player.marker)
   end
 
   def check_winner(player)
@@ -78,7 +71,7 @@ class Board
     end
   end
 
-  def calculate_moves_auto(marker, other_marker)
+  def computer_moves(marker, other_marker)
     defend_square = nil
     attacked = false
 
@@ -94,7 +87,7 @@ class Board
       end
     end
 
-    if attacked == false
+    if !attacked
       WINNING_POSITIONS.each do |line|
         defend_square = two_in_a_row({ line[0] => data[line[0]],
                                          line[1] => data[line[1]],
@@ -134,11 +127,14 @@ class Game
     loop do
       @board.mark(@player)
       @board.draw
-      break if @board.check_winner(@player) || @board.no_empty_square?
+      break if @board.check_winner(@player) || @board.empty_square.empty?
       @board.mark_auto(@computer, @player)
       @board.draw
-      break if @board.check_winner(@computer) || @board.no_empty_square?
+      break if @board.check_winner(@computer) || @board.empty_square.empty?
     end
+
+    puts "It's a tie!"
+
   end
 end
 
